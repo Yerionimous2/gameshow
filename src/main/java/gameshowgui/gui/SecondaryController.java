@@ -9,4 +9,13 @@ public class SecondaryController {
     private void switchToPrimary() throws IOException {
         App.setRoot("primary");
     }
+
+    public void handleMessage(String empfangeneNachricht) {
+        String[] teile = empfangeneNachricht.split(",");
+        if(teile[0].equals("Team")) {
+            // TODO: Team teile[1] die Frage zuweisen
+        } else if(teile[0].equals("Zurück")) {
+            // TODO: Wechsel zu PrimaryController
+        }
+    }
 }

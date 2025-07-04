@@ -88,8 +88,10 @@ public class PrimaryController {
                 new Frage(500, "Frage 6.5")
             })
         };
+
         try {
             HttpsController.getInstance(kategorien);
+            HttpsController.getInstance(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -154,6 +156,17 @@ public class PrimaryController {
      } else {
            backgroundImageView.setFitHeight(root.getHeight());
            backgroundImageView.setFitWidth(-1);
+        }
+    }
+
+    public void handleMessage(String empfangeneNachricht) {
+        String[] teile = empfangeneNachricht.split(",");
+        if(teile[0].equals("Frage")) {
+            // TODO: Wechsel zu secondary mit der Frage
+        } else if(teile[0].equals("Punkte")) {
+            // TODO: Wechsel zur Punkteanzeige
+        } else if(teile[0].equals("Anpassen")) {
+            // TODO: Die Punkte von Team teile[1] um teile[2] anpassen
         }
     }
 }
