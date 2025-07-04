@@ -79,7 +79,6 @@ public final class HttpsController{
 
             // Server starten
             server.start();
-            System.out.println("Jetty HTTPS Server läuft auf Port 8443");
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
