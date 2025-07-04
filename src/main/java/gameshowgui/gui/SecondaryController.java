@@ -1,4 +1,4 @@
-package gameshowgui;
+package gameshowgui.gui;
 
 import java.io.IOException;
 import javafx.fxml.FXML;
