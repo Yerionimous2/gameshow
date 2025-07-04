@@ -2,6 +2,7 @@ package gameshowgui.gui;
 
 import java.io.IOException;
 
+import gameshowgui.httpsController.HttpsController;
 import gameshowgui.model.Frage;
 import gameshowgui.model.Kategorie;
 import javafx.fxml.FXML;
@@ -87,8 +88,11 @@ public class PrimaryController {
                 new Frage(500, "Frage 6.5")
             })
         };
-
-
+        try {
+            HttpsController.getInstance(kategorien);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         initializeGrid(kategorien);
     }
 
