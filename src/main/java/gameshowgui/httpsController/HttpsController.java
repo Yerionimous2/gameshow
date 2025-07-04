@@ -106,15 +106,12 @@ public final class HttpsController{
                         response.getWriter().println("Nachricht empfangen");
                         baseRequest.setHandled(true);
                         response.setStatus(HttpServletResponse.SC_OK);
-                    } else if (secondaryController != null) {
+                    }
+                    if (secondaryController != null) {
                         secondaryController.handleMessage(empfangeneNachricht);
                         response.getWriter().println("Nachricht empfangen");
                         baseRequest.setHandled(true);
                         response.setStatus(HttpServletResponse.SC_OK);
-                    } else {
-                        response.getWriter().println("Keine Controller vorhanden, Nachricht nicht verarbeitet");
-                        baseRequest.setHandled(true);
-                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     }
                 }
 
