@@ -30,10 +30,14 @@ public class PrimaryController {
     private StackPane root;
 
     @FXML
-    private void wechselZuFrage(Frage frage) throws IOException {
-        // TODO: Implement logic to handle the question
-        App.setRoot("secondary");
-    }
+private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException {
+    App.setRoot("secondary");
+    
+    // Frage an den SecondaryController weitergeben
+    SecondaryController secondaryController = (SecondaryController) App.getCurrentController();
+    secondaryController.zeigeFrage(frage, kategorie);
+}
+
 
     @FXML
     private void initialize() {
@@ -123,7 +127,7 @@ public class PrimaryController {
                 frageButton.setOnAction(event -> {
                     try {
                         HttpsController.getInstance().sendMessage("Frage," + kategorie.getName() + "," + frage.getPunkte());
-                        wechselZuFrage(frage);
+                        wechselZuFrage(frage, kategorie);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

@@ -14,6 +14,7 @@ import java.io.IOException;
 public class App extends Application {
 
     private static Scene scene;
+    private static Object currentController;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -28,11 +29,17 @@ public class App extends Application {
 
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/gameshowgui/gui/" + fxml + ".fxml"));
-        return fxmlLoader.load();
+        Parent result = fxmlLoader.load();
+        currentController = fxmlLoader.getController();
+        return result;
     }
 
     public static void main(String[] args) {
         launch();
+    }
+
+    public static Object getCurrentController() {
+        return currentController;
     }
 
 }
