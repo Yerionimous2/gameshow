@@ -5,6 +5,7 @@ import java.io.IOException;
 import gameshowgui.httpsController.HttpsController;
 import gameshowgui.model.Frage;
 import gameshowgui.model.Kategorie;
+
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
@@ -113,14 +114,15 @@ public class PrimaryController {
             GridPane.setHgrow(kategorieLabel, Priority.ALWAYS);
             GridPane.setVgrow(kategorieLabel, Priority.ALWAYS);
             GridPane.setHalignment(kategorieLabel, HPos.CENTER);
+            // TODO: Read the color from the config file
             kategorieLabel.setStyle("-fx-font-weight: bold;-fx-text-fill: white; -fx-font-size: 20px;");
             row++;
             kategorie.sort();
             for (Frage frage : kategorie.getFragen()) {
-                // Create a button or label for each question
                 FragenPanel frageButton = new FragenPanel(frage);
                 frageButton.setOnAction(event -> {
                     try {
+                        HttpsController.getInstance().sendMessage("Frage," + kategorie.getName() + "," + frage.getPunkte());
                         wechselZuFrage(frage);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -129,7 +131,8 @@ public class PrimaryController {
                 frageButton.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 GridPane.setHgrow(frageButton, Priority.ALWAYS);
                 GridPane.setVgrow(frageButton, Priority.ALWAYS);
-                frageButton.setStyle("-fx-background-color: " + toHexString(frage.getFarbe()) + ";");
+                // TODO: Read the color from the config file
+                frageButton.setStyle("-fx-background-color: " + toHexString(frage.getFarbe()) + ";-fx-text-fill: white;");
                 foregroundGrid.add(frageButton, column, row);
                 row++;
             }
@@ -167,8 +170,8 @@ public class PrimaryController {
             // TODO: Wechsel zur Punkteanzeige
         } else if(teile[0].equals("Anpassen")) {
             // TODO: Die Punkte von Team teile[1] um teile[2] anpassen
+        } else if(teile[0].equals("Zurücksetzen")) {
+            // TODO: Alle Teams aus allen Fragen entfernen
         }
     }
 }
-
-

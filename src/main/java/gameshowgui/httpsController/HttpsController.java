@@ -9,6 +9,7 @@ import gameshowgui.model.Frage;
 import gameshowgui.model.Kategorie;
 
 import org.eclipse.jetty.server.handler.AbstractHandler;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.ServletException;
@@ -52,6 +53,13 @@ public final class HttpsController{
         return instance;
     }
 
+    public static HttpsController getInstance() {
+        if(instance == null) {
+            throw new IllegalStateException("HttpsController must be initialized with categories.");
+        }
+        return instance;
+    }
+
     private HttpsController(Kategorie[] kategorien) {
         try {
             String alias = "obviousAlias";
@@ -89,42 +97,42 @@ public final class HttpsController{
             server.addConnector(sslConnector);
 
             server.setHandler(new AbstractHandler() {
-            @Override
-            public void handle(String target,
+                @Override
+                public void handle(String target,
                                Request baseRequest,
                                HttpServletRequest request,
                                HttpServletResponse response)
                     throws IOException, ServletException {
 
-                if ("POST".equalsIgnoreCase(request.getMethod())) {
-                    String empfangeneNachricht;
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()))) {
-                        empfangeneNachricht = reader.lines().collect(Collectors.joining("\n"));
+                    if ("POST".equalsIgnoreCase(request.getMethod())) {
+                        String empfangeneNachricht;
+                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()))) {
+                            empfangeneNachricht = reader.lines().collect(Collectors.joining("\n"));
+                        }
+                        if (primaryController != null) {
+                            primaryController.handleMessage(empfangeneNachricht);
+                            response.getWriter().println("Nachricht empfangen");
+                            baseRequest.setHandled(true);
+                            response.setStatus(HttpServletResponse.SC_OK);
+                        }
+                        if (secondaryController != null) {
+                            secondaryController.handleMessage(empfangeneNachricht);
+                            response.getWriter().println("Nachricht empfangen");
+                            baseRequest.setHandled(true);
+                            response.setStatus(HttpServletResponse.SC_OK);
+                        }
                     }
-                    if (primaryController != null) {
-                        primaryController.handleMessage(empfangeneNachricht);
-                        response.getWriter().println("Nachricht empfangen");
-                        baseRequest.setHandled(true);
-                        response.setStatus(HttpServletResponse.SC_OK);
-                    }
-                    if (secondaryController != null) {
-                        secondaryController.handleMessage(empfangeneNachricht);
-                        response.getWriter().println("Nachricht empfangen");
-                        baseRequest.setHandled(true);
-                        response.setStatus(HttpServletResponse.SC_OK);
-                    }
-                }
 
-                if ("GET".equalsIgnoreCase(request.getMethod())) {
-                    clients.add(response);
-                    response.setContentType("text/plain; charset=utf-8");
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    response.getWriter().println(aktuelleNachricht);
-                    response.getWriter().flush();
-                    baseRequest.setHandled(true);
+                    if ("GET".equalsIgnoreCase(request.getMethod())) {
+                        clients.add(response);
+                        response.setContentType("text/plain; charset=utf-8");
+                        response.setStatus(HttpServletResponse.SC_OK);
+                        response.getWriter().println(aktuelleNachricht);
+                        response.getWriter().flush();
+                        baseRequest.setHandled(true);
+                    }
                 }
-            }
-        });
+            });
             server.start();
         } catch (Exception e) {
             e.printStackTrace();
