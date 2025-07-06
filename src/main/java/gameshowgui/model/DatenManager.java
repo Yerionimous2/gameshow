@@ -16,7 +16,6 @@ public class DatenManager {
 
     private DatenManager() {
         try {
-            // Verzeichnis erstellen, falls nicht vorhanden
             Files.createDirectories(DATEIPFAD.getParent());
 
             if (Files.exists(DATEIPFAD)) {
@@ -34,7 +33,7 @@ public class DatenManager {
 
     public void speichern() {
         try {
-            Files.createDirectories(DATEIPFAD.getParent()); // Sicherstellen, dass das Verzeichnis existiert
+            Files.createDirectories(DATEIPFAD.getParent());
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DATEIPFAD.toFile()))) {
                 oos.writeObject(datenEinwickler);
             }
@@ -93,8 +92,10 @@ public class DatenManager {
         int punkte = 0;
         for (Kategorie kategorie : datenEinwickler.getKategorien()) {
             for (Frage frage : kategorie.getFragen()) {
+                System.out.println(frage.getPunkte() + " " + frage.getTeam());
                 if (frage.getTeam() != null && frage.getTeam() == team) {
                     punkte += frage.getPunkte();
+                    System.out.println("true");
                 }
             }
         }

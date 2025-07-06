@@ -3,6 +3,7 @@ package gameshowgui.httpsController;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
+import gameshowgui.gui.PointsController;
 import gameshowgui.gui.PrimaryController;
 import gameshowgui.gui.SecondaryController;
 import gameshowgui.model.Frage;
@@ -12,6 +13,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import javafx.application.Platform;
 import jakarta.servlet.ServletException;
 
 import java.io.BufferedReader;
@@ -22,11 +24,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public final class HttpsController{
+public final class HttpsController {
 
     private static HttpsController instance;
     private static PrimaryController primaryController;
     private static SecondaryController secondaryController;
+    private static PointsController pointsController;
     private Set<HttpServletResponse> clients = ConcurrentHashMap.newKeySet();
     private String aktuelleNachricht;
 
@@ -42,6 +45,14 @@ public final class HttpsController{
             throw new IllegalStateException("HttpsController must be initialized with categories.");
         }
         HttpsController.primaryController = primaryController;
+        return instance;
+    }
+
+    public static HttpsController getInstance(PointsController pointsController) {
+        if(instance == null) {
+            throw new IllegalStateException("HttpsController must be initialized with categories.");
+        }
+        HttpsController.pointsController = pointsController;
         return instance;
     }
 
@@ -109,18 +120,20 @@ public final class HttpsController{
                         try (BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()))) {
                             empfangeneNachricht = reader.lines().collect(Collectors.joining("\n"));
                         }
-                        if (primaryController != null) {
-                            primaryController.handleMessage(empfangeneNachricht);
-                            response.getWriter().println("Nachricht empfangen");
-                            baseRequest.setHandled(true);
-                            response.setStatus(HttpServletResponse.SC_OK);
-                        }
-                        if (secondaryController != null) {
-                            secondaryController.handleMessage(empfangeneNachricht);
-                            response.getWriter().println("Nachricht empfangen");
-                            baseRequest.setHandled(true);
-                            response.setStatus(HttpServletResponse.SC_OK);
-                        }
+                        Platform.runLater(() -> {
+                            if (primaryController != null) {
+                                primaryController.handleMessage(empfangeneNachricht);
+                            }
+                            if (secondaryController != null) {
+                                secondaryController.handleMessage(empfangeneNachricht);
+                            }
+                            if (pointsController != null) {
+                                pointsController.handleMessage(empfangeneNachricht);
+                            }
+                        });
+                        response.getWriter().println("Nachricht empfangen");
+                        baseRequest.setHandled(true);
+                        response.setStatus(HttpServletResponse.SC_OK);
                     }
 
                     if ("GET".equalsIgnoreCase(request.getMethod())) {

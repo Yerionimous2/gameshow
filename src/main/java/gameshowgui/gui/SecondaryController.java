@@ -1,5 +1,9 @@
 package gameshowgui.gui;
 
+import java.io.IOException;
+
+import gameshowgui.httpsController.HttpsController;
+import gameshowgui.model.DatenManager;
 import gameshowgui.model.FotoFrage;
 import gameshowgui.model.Frage;
 import gameshowgui.model.Kategorie;
@@ -28,8 +32,12 @@ public class SecondaryController {
     @FXML
     private StackPane root;
 
+    private Frage aktuelleFrage;
+
     @FXML
     private void initialize() {
+        HttpsController.getInstance(this);
+        // TODO: Read the background image from the config file
         backgroundImageView.setImage(new Image(getClass().getResource("/images/background.jpg").toExternalForm()));
 
         root.widthProperty().addListener((obs, oldVal, newVal) -> adjustBackgroundSize());
@@ -55,6 +63,7 @@ public class SecondaryController {
     }
 
     public void zeigeFrage(Frage frage, Kategorie kategorie) {
+        this.aktuelleFrage = frage;
         javafx.scene.control.Label frageLabel = new javafx.scene.control.Label(kategorie.getName() + " " + frage.getPunkte());
         frageLabel.setStyle("-fx-font-size: 28px; -fx-text-fill: white;");
         frageLabel.setLayoutX(50);
@@ -96,16 +105,26 @@ public class SecondaryController {
     public void handleMessage(String empfangeneNachricht) {
         String[] teile = empfangeneNachricht.split(",");
         if(teile[0].equals("Team")) {
-            // TODO: Team teile[1] die Frage zuweisen
-            wechselZuÜbersicht();
+            aktuelleFrage.setTeam(DatenManager.getInstance().findeTeam(teile[1]));
+            DatenManager.getInstance().speichern();
+            try {
+                wechselZuÜbersicht();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         } else if(teile[0].equals("Zurück")) {
-            wechselZuÜbersicht();
+            try {
+                wechselZuÜbersicht();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
-    private void wechselZuÜbersicht() {
-        // TODO: Implement logic to switch to primary
-        throw new UnsupportedOperationException("Unimplemented method 'wechselZuÜbersicht'");
+    private void wechselZuÜbersicht() throws IOException {
+        App.setRoot("primary");
     }
 
     private String toHexString(Color farbe) {

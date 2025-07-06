@@ -136,7 +136,12 @@ private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException
                 e.printStackTrace();
             }
         } else if(teile[0].equals("Punkte")) {
-            // TODO: Wechsel zur Punkteanzeige
+            try {
+                App.setRoot("points");
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         } else if(teile[0].equals("Anpassen")) {
             if(DatenManager.getInstance().findeKategorie("Anpassungen") == null) {
                 Kategorie anpassungen = new Kategorie("Anpassungen", new Frage[0]);
