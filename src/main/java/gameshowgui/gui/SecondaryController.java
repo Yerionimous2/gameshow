@@ -105,7 +105,11 @@ public class SecondaryController {
     public void handleMessage(String empfangeneNachricht) {
         String[] teile = empfangeneNachricht.split(",");
         if(teile[0].equals("Team")) {
-            aktuelleFrage.setTeam(DatenManager.getInstance().findeTeam(teile[1]));
+            if(teile[1].equals("löschen")) {
+                aktuelleFrage.setTeam(null);
+            } else {
+                aktuelleFrage.setTeam(DatenManager.getInstance().findeTeam(teile[1]));
+            }
             DatenManager.getInstance().speichern();
             try {
                 wechselZuÜbersicht();
@@ -117,7 +121,6 @@ public class SecondaryController {
             try {
                 wechselZuÜbersicht();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

@@ -1,10 +1,13 @@
 package gameshowgui.gui;
 
+import java.io.IOException;
+
 import gameshowgui.httpsController.HttpsController;
 import gameshowgui.model.DatenManager;
 import gameshowgui.model.Team;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -12,6 +15,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -34,10 +38,13 @@ public class PointsController {
     root.setPadding(new Insets(70));
 
     VBox overlayBox = new VBox(10);
-    overlayBox.setPadding(new Insets(20));
+    overlayBox.setPadding(new Insets(50));
     overlayBox.setBackground(new Background(new BackgroundFill(
         Color.color(1, 0, 1, 0.6), CornerRadii.EMPTY, Insets.EMPTY
     )));
+    overlayBox.setMaxWidth(Double.MAX_VALUE);
+    overlayBox.setMaxHeight(Double.MAX_VALUE);
+    VBox.setVgrow(overlayBox, Priority.ALWAYS);
 
     Team[] teams = DatenManager.getInstance().getTeams();
     if (teams.length == 0) return;
@@ -50,34 +57,63 @@ public class PointsController {
         }
     }
 
-    for (Team team : teams) {
-        String teamName = team.getName();
-        int punkte = DatenManager.getInstance().getPunkte(team);
+for (Team team : teams) {
+    String teamName = team.getName();
+    int punkte = DatenManager.getInstance().getPunkte(team);
 
-        // Label links (Name)
-        Label nameLabel = new Label(teamName);
-        nameLabel.setPrefWidth(100);
+    Label nameLabel = new Label(teamName);
+    nameLabel.setPrefWidth(100);
+    nameLabel.setTextFill(Color.WHITE);
 
-        // Balken
-        double widthRatio = punkte / (double) maxPoints;
-        Rectangle bar = new Rectangle(200 * widthRatio, 20, Color.ORANGE);
-        bar.setArcWidth(5);
-        bar.setArcHeight(5);
+    Label punkteLabel = new Label(String.valueOf(punkte));
+    punkteLabel.setPrefWidth(50);
+    punkteLabel.setTextFill(Color.WHITE);
+    punkteLabel.setAlignment(Pos.CENTER_RIGHT);
+    punkteLabel.setTextAlignment(javafx.scene.text.TextAlignment.RIGHT);
 
-        // Label rechts (Punkte)
-        Label punkteLabel = new Label(String.valueOf(punkte));
-        punkteLabel.setPrefWidth(50);
+    // Balken-Container als StackPane für vertikale Zentrierung
+    StackPane barContainer = new StackPane();
+    HBox.setHgrow(barContainer, Priority.ALWAYS);
 
-        HBox entry = new HBox(10, nameLabel, bar, punkteLabel);
-        overlayBox.getChildren().add(entry);
-    }
+    Rectangle bar = new Rectangle();
+    bar.setArcWidth(5);
+    bar.setArcHeight(5);
+    bar.setFill(team.getFarbe());
+
+    // Balkenbreite anpassen (wie gehabt)
+    double widthRatio = (maxPoints == 0) ? 0 : (double) punkte / maxPoints;
+    bar.widthProperty().bind(barContainer.widthProperty().multiply(widthRatio));
+
+    // Höhe des Balkens soll mit HBox mitwachsen, mit etwas Abstand
+    bar.heightProperty().bind(barContainer.heightProperty().subtract(10));
+
+    barContainer.getChildren().add(bar);
+    barContainer.setAlignment(Pos.CENTER_LEFT);
+
+    HBox entry = new HBox(10, nameLabel, barContainer, punkteLabel);
+    entry.setAlignment(Pos.CENTER_LEFT);
+    entry.setMaxWidth(Double.MAX_VALUE);
+    entry.setPrefHeight(0); // gleichmäßige Verteilung
+    VBox.setVgrow(entry, Priority.ALWAYS);
+
+    overlayBox.getChildren().add(entry);
+}
+
+
 
     root.getChildren().add(overlayBox);
 }
 
 
     public void handleMessage(String empfangeneNachricht) {
-        // TODO: Hier muss nur "Zurück" verarbeitet werden.
+        String[] teile = empfangeneNachricht.split(",");
+        if(teile[0].equals("Zurück")) {
+            try {
+                App.setRoot("primary");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void adjustBackgroundSize() {

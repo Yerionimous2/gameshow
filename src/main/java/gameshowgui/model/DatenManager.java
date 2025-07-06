@@ -92,10 +92,8 @@ public class DatenManager {
         int punkte = 0;
         for (Kategorie kategorie : datenEinwickler.getKategorien()) {
             for (Frage frage : kategorie.getFragen()) {
-                System.out.println(frage.getPunkte() + " " + frage.getTeam());
                 if (frage.getTeam() != null && frage.getTeam() == team) {
                     punkte += frage.getPunkte();
-                    System.out.println("true");
                 }
             }
         }
