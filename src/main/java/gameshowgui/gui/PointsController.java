@@ -31,6 +31,7 @@ public class PointsController {
 
     private void initialize() {
     HttpsController.getInstance(this);
+    // TODO: Read the background image from the config file
     backgroundImageView.setImage(new Image(getClass().getResource("/images/background.jpg").toExternalForm()));
 
     root.widthProperty().addListener((obs, oldVal, newVal) -> adjustBackgroundSize());

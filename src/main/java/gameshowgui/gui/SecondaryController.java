@@ -114,7 +114,6 @@ public class SecondaryController {
             try {
                 wechselZuÜbersicht();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } else if(teile[0].equals("Zurück")) {

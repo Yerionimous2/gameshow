@@ -21,9 +21,6 @@ public class FragenPanel extends Button{
         );
 
         this.setStyle(style);
-        this.setOnMouseClicked(e -> {
-        	// TODO: Wechseln der Szene und senden von Signal an Mobilgerät
-        });
 	}
 	
 	public void aktualisiere(Frage frage) {
