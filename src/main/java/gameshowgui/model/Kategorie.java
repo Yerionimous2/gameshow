@@ -24,6 +24,10 @@ public class Kategorie implements Serializable {
 	public Frage[] getFragen() {
 		return this.fragen;
 	}
+
+	public void setFragen(Frage[] fragen) {
+		this.fragen = fragen;
+	}
 	
 	public String toString() {
 		String result = this.name + "(";

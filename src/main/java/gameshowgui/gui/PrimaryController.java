@@ -67,6 +67,9 @@ private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException
         row0.setVgrow(Priority.ALWAYS);
         foregroundGrid.getRowConstraints().add(0, row0);
         for (Kategorie kategorie : kategorien) {
+            if(kategorie.getName().equals("Anpassungen")) {
+                continue;
+            }
             Label kategorieLabel = new javafx.scene.control.Label(kategorie.getName());
             foregroundGrid.add(kategorieLabel, column, 0);
             kategorieLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -125,13 +128,36 @@ private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException
     public void handleMessage(String empfangeneNachricht) {
         String[] teile = empfangeneNachricht.split(",");
         if(teile[0].equals("Frage")) {
-            // TODO: Wechsel zu secondary mit der Frage
+            Frage frage = DatenManager.getInstance().findeFrage(teile[1], Integer.parseInt(teile[2]));
+            Kategorie kategorie = DatenManager.getInstance().findeKategorie(frage);
+            try {
+                wechselZuFrage(frage, kategorie);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else if(teile[0].equals("Punkte")) {
             // TODO: Wechsel zur Punkteanzeige
         } else if(teile[0].equals("Anpassen")) {
-            // TODO: Die Punkte von Team teile[1] um teile[2] anpassen
+            if(DatenManager.getInstance().findeKategorie("Anpassungen") == null) {
+                Kategorie anpassungen = new Kategorie("Anpassungen", new Frage[0]);
+                Kategorie[] kategorienOrig = DatenManager.getInstance().getKategorien();
+                Kategorie[] kategorienNeu = new Kategorie[kategorienOrig.length + 1];
+                System.arraycopy(kategorienOrig, 0, kategorienNeu, 0, kategorienOrig.length);
+                kategorienNeu[kategorienOrig.length] = anpassungen;
+                DatenManager.getInstance().setKategorien(kategorienNeu);
+                DatenManager.getInstance().speichern();
+            }
+            Kategorie anpassungenOrig = DatenManager.getInstance().findeKategorie("Anpassungen");
+            Frage[] fragenOrig = anpassungenOrig.getFragen();
+            Frage[] fragenNeu = new Frage[fragenOrig.length + 1];
+            System.arraycopy(fragenOrig, 0, fragenNeu, 0, fragenOrig.length);
+            Frage addFrage = new Frage(Integer.parseInt(teile[2]),"");
+            addFrage.setTeam(DatenManager.getInstance().findeTeam(teile[1]));
+            fragenNeu[fragenOrig.length] = addFrage;
+            anpassungenOrig.setFragen(fragenNeu);
+            DatenManager.getInstance().speichern();
         } else if(teile[0].equals("Zurücksetzen")) {
-            // TODO: Alle Teams aus allen Fragen entfernen
+            DatenManager.getInstance().zurücksetzen();
         }
     }
 }

@@ -52,6 +52,18 @@ public class DatenManager {
         }
     }
 
+    public void zurücksetzen() {
+        for(Kategorie kategorie : datenEinwickler.getKategorien()) {
+            if(kategorie.getName().equals("Anpassungen")) {
+                kategorie.setFragen(new Frage[0]);
+            }
+            for(Frage frage : kategorie.getFragen()) {
+                frage.setTeam(null);
+            }
+        }
+        speichern();
+    }
+
     public static DatenManager getInstance() {
         if (instance == null) {
             instance = new DatenManager();
@@ -101,6 +113,43 @@ public class DatenManager {
                         result = frage;
                     }
                 }
+            }
+        }
+        return result;
+    }
+
+    public Kategorie findeKategorie(String name) {
+        Kategorie result = null;
+        for (Kategorie kategorie : datenEinwickler.getKategorien()) {
+            if (kategorie.getName().equals(name)) {
+                if(result != null) {
+                    throw new IllegalStateException("Mehrere Kategorien mit dem gleichen Namen gefunden: " + name);
+                }
+                result = kategorie;
+            }
+        }
+        return result;
+    }
+
+    public Kategorie findeKategorie(Frage frage) {
+        for (Kategorie kategorie : datenEinwickler.getKategorien()) {
+            for(Frage f : kategorie.getFragen()) {
+                if (frage == f) {
+                    return kategorie;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Team findeTeam(String string) {
+        Team result = null;
+        for(Team team : datenEinwickler.getTeams()) {
+            if (team.getName().equals(string)) {
+                if(result != null) {
+                    throw new IllegalStateException("Mehrere Teams mit dem gleichen Namen gefunden: " + string);
+                }
+                result = team;
             }
         }
         return result;
