@@ -1,9 +1,10 @@
 package gameshowgui.model;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class Kategorie{
+public class Kategorie implements Serializable {
 	String name;
 	Frage[] fragen;
 	

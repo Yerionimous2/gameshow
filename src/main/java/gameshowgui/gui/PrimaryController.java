@@ -3,9 +3,9 @@ package gameshowgui.gui;
 import java.io.IOException;
 
 import gameshowgui.httpsController.HttpsController;
+import gameshowgui.model.DatenManager;
 import gameshowgui.model.Frage;
 import gameshowgui.model.Kategorie;
-
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
@@ -47,52 +47,8 @@ private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException
         foregroundGrid.prefHeightProperty().bind(root.heightProperty());
         //TODO: Read the background image from the config file
         backgroundImageView.setImage(new Image(getClass().getResource("/images/background.jpg").toExternalForm()));
-
-        //TODO: Read the Categories and Questions from the config file
-        Kategorie[] kategorien = {
-            new Kategorie("Kategorie 1", new Frage[]{
-                new Frage(100, "Frage 1.1"),
-                new Frage(200, "Frage 1.2"),
-                new Frage(300, "Frage 1.3"),
-                new Frage(400, "Frage 1.4"),
-                new Frage(500, "Frage 1.5")
-            }),
-            new Kategorie("Kategorie 2", new Frage[]{
-                new Frage(100, "Frage 2.1"),
-                new Frage(200, "Frage 2.2"),
-                new Frage(300, "Frage 2.3"),
-                new Frage(400, "Frage 2.4"),
-                new Frage(500, "Frage 2.5")
-            }),
-            new Kategorie("Kategorie 3", new Frage[]{
-                new Frage(100, "Frage 3.1"),
-                new Frage(200, "Frage 3.2"),
-                new Frage(300, "Frage 3.3"),
-                new Frage(400, "Frage 3.4"),
-                new Frage(500, "Frage 3.5")
-            }),
-            new Kategorie("Kategorie 4", new Frage[]{
-                new Frage(100, "Frage 4.1"),
-                new Frage(200, "Frage 4.2"),
-                new Frage(300, "Frage 4.3"),
-                new Frage(400, "Frage 4.4"),
-                new Frage(500, "Frage 4.5")
-            }),
-            new Kategorie("Kategorie 5", new Frage[]{
-                new Frage(100, "Frage 5.1"),
-                new Frage(200, "Frage 5.2"),
-                new Frage(300, "Frage 5.3"),
-                new Frage(400, "Frage 5.4"),
-                new Frage(500, "Frage 5.5")
-            }),
-            new Kategorie("Kategorie 6", new Frage[]{
-                new Frage(100, "Frage 6.1"),
-                new Frage(200, "Frage 6.2"),
-                new Frage(300, "Frage 6.3"),
-                new Frage(400, "Frage 6.4"),
-                new Frage(500, "Frage 6.5")
-            })
-        };
+        
+        Kategorie[] kategorien = DatenManager.getInstance().getKategorien();
 
         try {
             HttpsController.getInstance(kategorien);

@@ -1,9 +1,11 @@
 package gameshowgui.model;
 
+import java.io.Serializable;
+
 import javafx.scene.paint.Color;
 
 
-public class Frage {
+public class Frage implements Serializable {
 	int punkte;
 	Team team;
 	String text;
@@ -34,5 +36,13 @@ public class Frage {
 	
 	public String getText() {
 		return this.text;
+	}
+
+	public Team getTeam() {
+		return this.team;
+	}
+
+	public void setTeam(Team team) {
+		this.team = team;
 	}
 }
