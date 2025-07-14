@@ -248,4 +248,19 @@ public class DatenManager {
     public DesignEinstellungen getDesignEinstellungen() {
         return design;
     }
+
+    public void ersetzeFrage(Frage frage, Frage neueFrage) {
+        for(Kategorie kategorie : datenEinwickler.getKategorien()) {
+            Frage[] fragen = kategorie.getFragen();
+            for (Frage f: fragen) {
+                if(f == frage) {
+                    removeFrage(kategorie, frage);
+                    addFrage(kategorie, neueFrage);
+                    kategorie.sort();
+                    speichern();
+                    return;
+                }
+            }
+        }
+    }
 }

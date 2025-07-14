@@ -93,6 +93,8 @@ public final class HttpsController {
             sslContextFactory.setKeyStore(keystore);
             sslContextFactory.setKeyStorePassword(new String(password));
             sslContextFactory.setKeyManagerPassword(new String(password));
+            sslContextFactory.setSniRequired(false);
+            sslContextFactory.setTrustAll(true);
 
             HttpConfiguration https = new HttpConfiguration();
             https.addCustomizer(new SecureRequestCustomizer());
@@ -152,6 +154,7 @@ public final class HttpsController {
                     }
 
                     if ("GET".equalsIgnoreCase(request.getMethod())) {
+                        PrimaryController.hideIP();
                         clients.add(response);
                         response.setContentType("text/plain; charset=utf-8");
                         response.setStatus(HttpServletResponse.SC_OK);

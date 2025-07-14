@@ -20,6 +20,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 
@@ -35,17 +36,40 @@ public class PrimaryController {
     private StackPane root;
 
     @FXML
-private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException {
-    App.setRoot("secondary");
-    
-    SecondaryController secondaryController = (SecondaryController) App.getCurrentController();
-    secondaryController.zeigeFrage(frage, kategorie);
-}
+    Button btnIP;
+
+    private boolean clickedIPButton = false;
+
+    @FXML
+    private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException {
+        App.setRoot("secondary");
+        
+        SecondaryController secondaryController = (SecondaryController) App.getCurrentController();
+        secondaryController.zeigeFrage(frage, kategorie);
+    }
+
+    public static void hideIP() {
+        PrimaryController controller = (PrimaryController) App.getCurrentController();
+        controller.clickedIPButton = true;
+        controller.btnIP.setVisible(false);
+    }
 
 
 
     @FXML
     private void initialize() {
+        try {
+            String ip = getLocalLANAddress();
+            btnIP.setText("IP: " + ip + ":8443");
+        } catch (Exception e) {
+            btnIP.setText("IP konnte nicht ermittelt werden");
+            e.printStackTrace();
+        }
+        if(!clickedIPButton) {
+            btnIP.setVisible(true);
+        } else {
+            btnIP.setVisible(false);
+        }
         foregroundGrid.prefWidthProperty().bind(root.widthProperty());
         foregroundGrid.prefHeightProperty().bind(root.heightProperty());
         
@@ -55,7 +79,6 @@ private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException
         root.setBackground(new Background(bgImage));
 
         Kategorie[] kategorien = DatenManager.getInstance().getKategorien();
-        System.out.println("Kategorien: " + kategorien.length);
 
         try {
             HttpsController.getInstance(kategorien);
@@ -64,6 +87,20 @@ private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException
             e.printStackTrace();
         }
         initializeGrid(kategorien);
+    }
+
+    private String getLocalLANAddress() throws Exception {
+    try (var socket = new java.net.Socket()) {
+        // Verbindung zu einem öffentlichen Server herstellen (nur zur IP-Ermittlung)
+        socket.connect(new java.net.InetSocketAddress("8.8.8.8", 53), 1000);
+        return socket.getLocalAddress().getHostAddress();
+    }
+}
+
+    @FXML
+    private void onHideIP() {
+        clickedIPButton = true;
+        btnIP.setVisible(false);
     }
 
     private void initializeGrid(Kategorie[] kategorien) {

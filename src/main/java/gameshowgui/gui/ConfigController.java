@@ -42,6 +42,8 @@ public class ConfigController {
     private VBox frageBox;
     @FXML 
     private VBox teamBox;
+    @FXML
+    private Label mediumLabel;
 
     private Kategorie[] kategorien;
     private Object selectedItem;
@@ -63,6 +65,18 @@ public class ConfigController {
                 } else if (item instanceof Kategorie) {
                     Kategorie kategorie = (Kategorie) item;
                     setText(kategorie.getName());
+                } else if (item instanceof FotoFrage) {
+                    Frage frage = (Frage) item;
+                    setText(frage.getPunkte() + "");
+                    setTextFill(Color.BLUE);
+                } else if (item instanceof VideoFrage) {
+                    Frage frage = (Frage) item;
+                    setText(frage.getPunkte() + "");
+                    setTextFill(Color.RED);
+                } else if (item instanceof MusikFrage) {
+                    Frage frage = (Frage) item;
+                    setText(frage.getPunkte() + "");
+                    setTextFill(Color.GREEN);
                 } else if (item instanceof Frage) {
                     Frage frage = (Frage) item;
                     setText(frage.getPunkte() + "");
@@ -193,6 +207,15 @@ public class ConfigController {
         } else {
             clearEditorFields();
             setButtonsVisible(false, false, false);
+        }
+        if(value instanceof FotoFrage) {
+            mediumLabel.setText("Foto: " + ((FotoFrage) value).getLink());
+        } else if(value instanceof VideoFrage) {
+            mediumLabel.setText("Video: " + ((VideoFrage) value).getLink());
+        } else if(value instanceof MusikFrage) {
+            mediumLabel.setText("Musik: " + ((MusikFrage) value).getLink());
+        } else {
+            mediumLabel.setText("Kein Medium ausgewählt");
         }
     }
 
@@ -348,6 +371,73 @@ public class ConfigController {
             DatenManager.getInstance().speichern();
         }
     }
+
+    @FXML
+    private void onRemoveMedium() {
+    if (selectedItem instanceof VideoFrage || selectedItem instanceof FotoFrage || selectedItem instanceof MusikFrage) {
+        Frage frage = (Frage) selectedItem;
+        Frage neueFrage = new Frage(frage.getPunkte(), frage.getText());
+        DatenManager.getInstance().ersetzeFrage(frage, neueFrage);
+        DatenManager.getInstance().speichern();
+        reloadTree();
+    }
+}
+
+    @FXML
+    private void onAddVideo() {
+        if (selectedItem instanceof Frage && !(selectedItem instanceof VideoFrage)) {
+            Frage frage = (Frage) selectedItem;
+            String pfad = chooseMediaFile("Video", "*.mp4");
+            if (pfad != null) {
+                Frage neueFrage = new VideoFrage(frage.getPunkte(), frage.getText(), pfad);
+                DatenManager.getInstance().ersetzeFrage(frage, neueFrage);
+                DatenManager.getInstance().speichern();
+                reloadTree();
+            }
+        }
+    }
+
+    @FXML
+    private void onAddFoto() {
+        if (selectedItem instanceof Frage && !(selectedItem instanceof FotoFrage)) {
+            Frage frage = (Frage) selectedItem;
+            String pfad = chooseMediaFile("Bild", "*.jpg", "*.jpeg", "*.png");
+            if (pfad != null) {
+                Frage neueFrage = new FotoFrage(frage.getPunkte(), frage.getText(), pfad);
+                DatenManager.getInstance().ersetzeFrage(frage, neueFrage);
+                DatenManager.getInstance().speichern();
+                reloadTree();
+            }
+        }
+    }
+
+    @FXML
+    private void onAddMusik() {
+        if (selectedItem instanceof Frage && !(selectedItem instanceof MusikFrage)) {
+            Frage frage = (Frage) selectedItem;
+            String pfad = chooseMediaFile("Musik", "*.mp3", "*.wav");
+            if (pfad != null) {
+                Frage neueFrage = new MusikFrage(frage.getPunkte(), frage.getText(), pfad);
+                DatenManager.getInstance().ersetzeFrage(frage, neueFrage);
+                DatenManager.getInstance().speichern();
+                reloadTree();
+            }
+        }
+    }
+
+    private String chooseMediaFile(String title, String... extensions) {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("Wähle " + title + " aus");
+        fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter(title + "-Dateien", extensions));
+        java.io.File file = fileChooser.showOpenDialog(null);
+        String result = "";
+        if (file != null) {
+            result =file.toURI().toString();
+        }
+        return result;
+    }
+
+
     @FXML
     private void onFarbenBearbeiten() {
         try {

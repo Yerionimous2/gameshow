@@ -37,12 +37,19 @@
             </VBox>
 
             <!-- Frage-Bearbeitung -->
-            <VBox fx:id="frageBox" visible="false" managed="false" spacing="5">
+            <VBox fx:id="frageBox" visible="false" managed="false" prefWidth="900" spacing="5">
                 <Label text="Frage Text" />
                 <TextField fx:id="frageTextField" promptText="Fragetext" />
                 <Label text="Punkte" />
                 <Spinner fx:id="punkteSpinner" editable="true" min="0" max="100" />
                 <Button fx:id="btnDeleteFrage" text="Frage löschen" onAction="#onDeleteFrage"/>
+                <HBox spacing="10" visible="true" prefWidth="900">
+                    <Button text="Video hinzufügen" onAction="#onAddVideo"/>
+                    <Button text="Foto hinzufügen" onAction="#onAddFoto"/>
+                    <Button text="Musik hinzufügen" onAction="#onAddMusik"/>
+                    <Button text="Medium entfernen" onAction="#onRemoveMedium"/>
+                    <Label fx:id="mediumLabel" text="Kein Medium ausgewählt" />
+                </HBox>
             </VBox>
 
             <!-- Team-Bearbeitung -->
