@@ -6,5 +6,9 @@ public class FotoFrage extends Frage{
 		super(punkte, text);
 		this.fotoLink = fotoLink;
 	}
+
+	public String getLink() {
+		return fotoLink;
+	}
 }
 

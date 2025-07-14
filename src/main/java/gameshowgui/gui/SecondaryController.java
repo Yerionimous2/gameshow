@@ -2,6 +2,7 @@ package gameshowgui.gui;
 
 import java.io.IOException;
 
+
 import gameshowgui.httpsController.HttpsController;
 import gameshowgui.model.DatenManager;
 import gameshowgui.model.FotoFrage;
@@ -20,6 +21,12 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+import javafx.scene.media.Media;
+import javafx.util.Duration;
 
 public class SecondaryController {
 
@@ -33,6 +40,7 @@ public class SecondaryController {
     private StackPane root;
 
     private Frage aktuelleFrage;
+    private MediaPlayer aktuellerPlayer;
 
     @FXML
     private void initialize() {
@@ -65,7 +73,9 @@ public class SecondaryController {
     public void zeigeFrage(Frage frage, Kategorie kategorie) {
         this.aktuelleFrage = frage;
         javafx.scene.control.Label frageLabel = new javafx.scene.control.Label(kategorie.getName() + " " + frage.getPunkte());
-        frageLabel.setStyle("-fx-font-size: 28px; -fx-text-fill: white;");
+        // TODO: Textfarbe aus der Config-Datei lesen
+        frageLabel.setTextFill(Color.WHITE);
+        frageLabel.setStyle("-fx-font-size: 35px;");
         frageLabel.setLayoutX(50);
         frageLabel.setLayoutY(50);
         foregroundBox.getChildren().clear();
@@ -77,7 +87,7 @@ public class SecondaryController {
         fragenBox.setMaxHeight(Double.MAX_VALUE);
         VBox.setVgrow(fragenBox, Priority.ALWAYS);
 
-        fragenBox.setStyle("-fx-background-color: " + toHexString(frage.getFarbe()) + ";-fx-text-fill: white;");
+        fragenBox.setStyle("-fx-background-color: " + toHexString(frage.getFarbe()) + ";");
         Region frageInhalt = erstelleFrageButton(frage);
         frageInhalt.setMaxWidth(Double.MAX_VALUE);
         frageInhalt.setMaxHeight(Double.MAX_VALUE);
@@ -88,18 +98,92 @@ public class SecondaryController {
     }
 
     private Region erstelleFrageButton(Frage frage) {
+        VBox container = new VBox(10);
+        container.setAlignment(Pos.TOP_LEFT);
+
+        Label frageText = new Label(frage.getText());
+        // TODO: Textfarbe aus der Config-Datei lesen
+        frageText.setTextFill(Color.WHITE);
+        frageText.setFont(Font.font("System", FontWeight.NORMAL, 27));
+
         if (frage instanceof VideoFrage) {
-            // TODO: handle VideoFrage-specific logic here
+            String link = ((VideoFrage) frage).getLink();
+
+            Media media = new Media(link);
+            MediaPlayer mediaPlayer = new MediaPlayer(media);
+            MediaView mediaView = new MediaView(mediaPlayer);
+
+            mediaPlayer.setOnReady(() -> {
+                mediaPlayer.seek(Duration.seconds(0));
+                mediaPlayer.pause();
+            });
+
+            mediaView.setPreserveRatio(true);
+
+            // Container-Inhalt horizontal zentrieren
+            container.setAlignment(Pos.CENTER);
+
+            container.widthProperty().addListener((obs, oldVal, newVal) -> {
+                double maxWidth = newVal.doubleValue() - 100;
+                if (maxWidth < 0) maxWidth = 0;
+                mediaView.setFitWidth(maxWidth);
+                mediaView.setVisible(maxWidth > 0 && mediaView.getFitHeight() > 0);
+            });
+
+            container.heightProperty().addListener((obs, oldVal, newVal) -> {
+                double maxHeight = newVal.doubleValue() - 100;
+                if (maxHeight < 0) maxHeight = 0;
+                mediaView.setFitHeight(maxHeight);
+                mediaView.setVisible(maxHeight > 0 && mediaView.getFitWidth() > 0);
+            });
+
+            container.getChildren().addAll(mediaView, frageText);
+
+            aktuellerPlayer = mediaPlayer;
+
+        } else if (frage instanceof MusikFrage) {
+            String link = ((MusikFrage) frage).getLink();
+
+            Media media = new Media(link);
+            MediaPlayer mediaPlayer = new MediaPlayer(media);
+            new MediaView(mediaPlayer);
+            mediaPlayer.setOnReady(() -> {
+                mediaPlayer.seek(Duration.seconds(0));
+                mediaPlayer.pause();
+            });
+
+            container.getChildren().addAll(frageText);
+
+            aktuellerPlayer = mediaPlayer;
+
+        } else if (frage instanceof FotoFrage) {
+            String link = ((FotoFrage) frage).getLink();
+            Image image = new Image(link);
+            ImageView imageView = new ImageView(image);
+            imageView.setPreserveRatio(true);
+            container.setAlignment(Pos.CENTER);
+
+            container.widthProperty().addListener((obs, oldVal, newVal) -> {
+                double maxWidth = newVal.doubleValue() - 50;
+                if (maxWidth < 0) maxWidth = 0;
+                imageView.setFitWidth(maxWidth);
+                imageView.setVisible(maxWidth > 0 && imageView.getFitHeight() > 0);
+            });
+
+            container.heightProperty().addListener((obs, oldVal, newVal) -> {
+                double maxHeight = newVal.doubleValue() - 50;
+                if (maxHeight < 0) maxHeight = 0;
+                imageView.setFitHeight(maxHeight);
+                imageView.setVisible(maxHeight > 0 && imageView.getFitHeight() > 0);
+            });
+
+            container.getChildren().addAll(imageView, frageText);
+
+        } else {
+            container.getChildren().add(frageText);
         }
-        if (frage instanceof MusikFrage) {
-            // TODO: handle MusikFrage-specific logic here
-        }
-        if (frage instanceof FotoFrage) {
-            // TODO: handle FotoFrage-specific logic here
-        }
-        Label result = new Label(frage.getText());
-        result.setAlignment(Pos.TOP_LEFT);
-        return result;
+
+        return container;
     }
 
     public void handleMessage(String empfangeneNachricht) {
@@ -122,6 +206,22 @@ public class SecondaryController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else if(teile[0].equals("Pause")) {
+            pauseMediaPlayer();
+        } else if(teile[0].equals("Fortsetzen")) {
+            resumeMediaPlayer();
+        }
+    }
+
+    public void pauseMediaPlayer() {
+        if (aktuellerPlayer != null) {
+            aktuellerPlayer.pause();
+        }
+    }
+
+    public void resumeMediaPlayer() {
+        if (aktuellerPlayer != null) {
+            aktuellerPlayer.play();
         }
     }
 

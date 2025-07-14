@@ -64,6 +64,7 @@ for (Team team : teams) {
 
     Label nameLabel = new Label(teamName);
     nameLabel.setPrefWidth(100);
+    // TODO: Read the text color from the config file
     nameLabel.setTextFill(Color.WHITE);
 
     Label punkteLabel = new Label(String.valueOf(punkte));
@@ -72,7 +73,6 @@ for (Team team : teams) {
     punkteLabel.setAlignment(Pos.CENTER_RIGHT);
     punkteLabel.setTextAlignment(javafx.scene.text.TextAlignment.RIGHT);
 
-    // Balken-Container als StackPane für vertikale Zentrierung
     StackPane barContainer = new StackPane();
     HBox.setHgrow(barContainer, Priority.ALWAYS);
 
@@ -81,11 +81,9 @@ for (Team team : teams) {
     bar.setArcHeight(5);
     bar.setFill(team.getFarbe());
 
-    // Balkenbreite anpassen (wie gehabt)
     double widthRatio = (maxPoints == 0) ? 0 : (double) punkte / maxPoints;
     bar.widthProperty().bind(barContainer.widthProperty().multiply(widthRatio));
 
-    // Höhe des Balkens soll mit HBox mitwachsen, mit etwas Abstand
     bar.heightProperty().bind(barContainer.heightProperty().subtract(10));
 
     barContainer.getChildren().add(bar);
@@ -94,7 +92,7 @@ for (Team team : teams) {
     HBox entry = new HBox(10, nameLabel, barContainer, punkteLabel);
     entry.setAlignment(Pos.CENTER_LEFT);
     entry.setMaxWidth(Double.MAX_VALUE);
-    entry.setPrefHeight(0); // gleichmäßige Verteilung
+    entry.setPrefHeight(0);
     VBox.setVgrow(entry, Priority.ALWAYS);
 
     overlayBox.getChildren().add(entry);

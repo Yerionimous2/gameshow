@@ -6,4 +6,8 @@ public class MusikFrage extends Frage{
 		super(punkte, text);
 		this.musikLink = musikLink;
 	}
+
+	public String getLink() {
+		return musikLink;
+	}
 }

@@ -33,7 +33,6 @@ public class PrimaryController {
 private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException {
     App.setRoot("secondary");
     
-    // Frage an den SecondaryController weitergeben
     SecondaryController secondaryController = (SecondaryController) App.getCurrentController();
     secondaryController.zeigeFrage(frage, kategorie);
 }
@@ -78,7 +77,8 @@ private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException
             GridPane.setVgrow(kategorieLabel, Priority.ALWAYS);
             GridPane.setHalignment(kategorieLabel, HPos.CENTER);
             // TODO: Read the color from the config file
-            kategorieLabel.setStyle("-fx-font-weight: bold;-fx-text-fill: white; -fx-font-size: 20px;");
+            kategorieLabel.setTextFill(Color.WHITE);
+            kategorieLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 20px;");
             row++;
             kategorie.sort();
             for (Frage frage : kategorie.getFragen()) {
@@ -95,7 +95,8 @@ private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException
                 GridPane.setHgrow(frageButton, Priority.ALWAYS);
                 GridPane.setVgrow(frageButton, Priority.ALWAYS);
                 // TODO: Read the color from the config file
-                frageButton.setStyle("-fx-background-color: " + toHexString(frage.getFarbe()) + ";-fx-text-fill: white;");
+                frageButton.setTextFill(Color.WHITE);
+                frageButton.setStyle("-fx-background-color: " + toHexString(frage.getFarbe()) + ";");
                 foregroundGrid.add(frageButton, column, row);
                 row++;
             }

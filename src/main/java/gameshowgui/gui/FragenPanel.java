@@ -14,7 +14,6 @@ public class FragenPanel extends Button{
 
         double alpha = farbe.getOpacity();
 
-        // Im CSS-Stil:
         String style = String.format(
             "-fx-background-color: rgba(%d, %d, %d, %.2f);",
             red, green, blue, alpha

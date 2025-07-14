@@ -6,4 +6,8 @@ public class VideoFrage extends Frage{
 		super(punkte, text);
 		this.videoLink = videoLink;
 	}
+
+	public String getLink() {
+		return videoLink;
+	}
 }
