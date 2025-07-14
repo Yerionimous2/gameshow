@@ -1,0 +1,33 @@
+<!-- FarbenEditor.fxml -->
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Button?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="gameshowgui.gui.FarbenEditorController">
+    <center>
+        <StackPane fx:id="previewPane" prefHeight="300" prefWidth="500" style="-fx-background-color: white;">
+            <VBox fx:id="textContainer" alignment="CENTER" spacing="20">
+                <Label fx:id="kategorieLabel" text="BeispielFrage" style="-fx-font-size: 28px;" />
+                <Label fx:id="frageLabel" text="Dies ist ein Beispieltext." wrapText="true" style="-fx-font-size: 20px;" />
+            </VBox>
+        </StackPane>
+    </center>
+    <right>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="Hintergrundfarbe:" />
+            <ColorPicker fx:id="backgroundColorPicker" />
+
+            <Label text="Textfarbe:" />
+            <ColorPicker fx:id="textColorPicker" />
+
+            <Label text="Hintergrundbild wählen:" />
+            <Button text="Bild auswählen" onAction="#onBildAuswaehlen" />
+        </VBox>
+    </right>
+</BorderPane>

@@ -3,6 +3,7 @@ package gameshowgui.httpsController;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
+import gameshowgui.gui.ConfigController;
 import gameshowgui.gui.PointsController;
 import gameshowgui.gui.PrimaryController;
 import gameshowgui.gui.SecondaryController;
@@ -30,6 +31,7 @@ public final class HttpsController {
     private static PrimaryController primaryController;
     private static SecondaryController secondaryController;
     private static PointsController pointsController;
+    private static ConfigController configController;
     private Set<HttpServletResponse> clients = ConcurrentHashMap.newKeySet();
     private String aktuelleNachricht;
 
@@ -64,12 +66,22 @@ public final class HttpsController {
         return instance;
     }
 
+    public static HttpsController getInstance(ConfigController configController) {
+        if(instance == null) {
+            throw new IllegalStateException("HttpsController must be initialized with categories.");
+        }
+        HttpsController.configController = configController;
+        return instance;
+    }
+
     public static HttpsController getInstance() {
         if(instance == null) {
             throw new IllegalStateException("HttpsController must be initialized with categories.");
         }
         return instance;
     }
+
+    
 
     private HttpsController(Kategorie[] kategorien) {
         try {
@@ -129,6 +141,9 @@ public final class HttpsController {
                             }
                             if (pointsController != null) {
                                 pointsController.handleMessage(empfangeneNachricht);
+                            }
+                            if(configController != null) {
+                                configController.handleMessage(empfangeneNachricht);
                             }
                         });
                         response.getWriter().println("Nachricht empfangen");

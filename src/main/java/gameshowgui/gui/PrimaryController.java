@@ -10,6 +10,11 @@ import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
@@ -38,16 +43,19 @@ private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException
 }
 
 
+
     @FXML
     private void initialize() {
-        root.widthProperty().addListener((obs, oldVal, newVal) -> adjustBackgroundSize());
-        root.heightProperty().addListener((obs, oldVal, newVal) -> adjustBackgroundSize());
         foregroundGrid.prefWidthProperty().bind(root.widthProperty());
         foregroundGrid.prefHeightProperty().bind(root.heightProperty());
-        //TODO: Read the background image from the config file
-        backgroundImageView.setImage(new Image(getClass().getResource("/images/background.jpg").toExternalForm()));
         
+        Image img = new Image(DatenManager.getInstance().getDesignEinstellungen().getHintergrundbild(), true);
+        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, false, true);
+        BackgroundImage bgImage = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+        root.setBackground(new Background(bgImage));
+
         Kategorie[] kategorien = DatenManager.getInstance().getKategorien();
+        System.out.println("Kategorien: " + kategorien.length);
 
         try {
             HttpsController.getInstance(kategorien);
@@ -76,8 +84,7 @@ private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException
             GridPane.setHgrow(kategorieLabel, Priority.ALWAYS);
             GridPane.setVgrow(kategorieLabel, Priority.ALWAYS);
             GridPane.setHalignment(kategorieLabel, HPos.CENTER);
-            // TODO: Read the color from the config file
-            kategorieLabel.setTextFill(Color.WHITE);
+            kategorieLabel.setTextFill(DatenManager.getInstance().getDesignEinstellungen().getTextfarbe());
             kategorieLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 20px;");
             row++;
             kategorie.sort();
@@ -94,8 +101,7 @@ private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException
                 frageButton.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 GridPane.setHgrow(frageButton, Priority.ALWAYS);
                 GridPane.setVgrow(frageButton, Priority.ALWAYS);
-                // TODO: Read the color from the config file
-                frageButton.setTextFill(Color.WHITE);
+                frageButton.setTextFill(DatenManager.getInstance().getDesignEinstellungen().getTextfarbe());
                 frageButton.setStyle("-fx-background-color: " + toHexString(frage.getFarbe()) + ";");
                 foregroundGrid.add(frageButton, column, row);
                 row++;
@@ -111,19 +117,6 @@ private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException
         int b = (int) Math.round(farbe.getBlue() * 255);
         int o = (int) Math.round(farbe.getOpacity() * 255);
         return String.format("#%02X%02X%02X%02X", r, g, b, o);
-    }
-
-    private void adjustBackgroundSize() {
-        double paneRatio = root.getWidth() / root.getHeight();
-        double imageRatio = backgroundImageView.getImage().getWidth() / backgroundImageView.getImage().getHeight();
-
-        if (paneRatio > imageRatio) {
-            backgroundImageView.setFitWidth(root.getWidth());
-            backgroundImageView.setFitHeight(-1);
-     } else {
-           backgroundImageView.setFitHeight(root.getHeight());
-           backgroundImageView.setFitWidth(-1);
-        }
     }
 
     public void handleMessage(String empfangeneNachricht) {
@@ -163,6 +156,12 @@ private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException
             DatenManager.getInstance().speichern();
         } else if(teile[0].equals("Zurücksetzen")) {
             DatenManager.getInstance().zurücksetzen();
+        } else if(teile[0].equals("Anpassungsmodus")) {
+            try {
+                App.setRoot("config");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -28,4 +28,16 @@ public class Team implements Serializable {
 	public String getName() {
 		return this.name;
 	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setTeamFarbe(Color farbe) {
+		this.teamFarbe = farbe;
+		this.teamFarbeString = String.format("#%02X%02X%02X", 
+			(int)(farbe.getRed() * 255), 
+			(int)(farbe.getGreen() * 255), 
+			(int)(farbe.getBlue() * 255));
+	}
 }

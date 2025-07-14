@@ -16,6 +16,11 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -45,36 +50,19 @@ public class SecondaryController {
     @FXML
     private void initialize() {
         HttpsController.getInstance(this);
-        // TODO: Read the background image from the config file
-        backgroundImageView.setImage(new Image(getClass().getResource("/images/background.jpg").toExternalForm()));
-
-        root.widthProperty().addListener((obs, oldVal, newVal) -> adjustBackgroundSize());
-        root.heightProperty().addListener((obs, oldVal, newVal) -> adjustBackgroundSize());
+        Image img = new Image(DatenManager.getInstance().getDesignEinstellungen().getHintergrundbild(), true);
+        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, false, true);
+        BackgroundImage bgImage = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+        root.setBackground(new Background(bgImage));
 
         foregroundBox.prefWidthProperty().bind(root.widthProperty());
         foregroundBox.prefHeightProperty().bind(root.heightProperty());
     }
 
-    private void adjustBackgroundSize() {
-        if (backgroundImageView.getImage() == null) return;
-
-        double paneRatio = root.getWidth() / root.getHeight();
-        double imageRatio = backgroundImageView.getImage().getWidth() / backgroundImageView.getImage().getHeight();
-
-        if (paneRatio > imageRatio) {
-            backgroundImageView.setFitWidth(root.getWidth());
-            backgroundImageView.setFitHeight(-1);
-        } else {
-            backgroundImageView.setFitHeight(root.getHeight());
-            backgroundImageView.setFitWidth(-1);
-        }
-    }
-
     public void zeigeFrage(Frage frage, Kategorie kategorie) {
         this.aktuelleFrage = frage;
         javafx.scene.control.Label frageLabel = new javafx.scene.control.Label(kategorie.getName() + " " + frage.getPunkte());
-        // TODO: Textfarbe aus der Config-Datei lesen
-        frageLabel.setTextFill(Color.WHITE);
+        frageLabel.setTextFill(DatenManager.getInstance().getDesignEinstellungen().getTextfarbe());
         frageLabel.setStyle("-fx-font-size: 35px;");
         frageLabel.setLayoutX(50);
         frageLabel.setLayoutY(50);
@@ -102,8 +90,7 @@ public class SecondaryController {
         container.setAlignment(Pos.TOP_LEFT);
 
         Label frageText = new Label(frage.getText());
-        // TODO: Textfarbe aus der Config-Datei lesen
-        frageText.setTextFill(Color.WHITE);
+        frageText.setTextFill(DatenManager.getInstance().getDesignEinstellungen().getTextfarbe());
         frageText.setFont(Font.font("System", FontWeight.NORMAL, 27));
 
         if (frage instanceof VideoFrage) {

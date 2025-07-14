@@ -13,6 +13,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -31,17 +35,18 @@ public class PointsController {
 
     private void initialize() {
     HttpsController.getInstance(this);
-    // TODO: Read the background image from the config file
-    backgroundImageView.setImage(new Image(getClass().getResource("/images/background.jpg").toExternalForm()));
+    Image img = new Image(DatenManager.getInstance().getDesignEinstellungen().getHintergrundbild(), true);
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, false, true);
+    BackgroundImage bgImage = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+    root.setBackground(new Background(bgImage));
 
-    root.widthProperty().addListener((obs, oldVal, newVal) -> adjustBackgroundSize());
-    root.heightProperty().addListener((obs, oldVal, newVal) -> adjustBackgroundSize());
     root.setPadding(new Insets(70));
 
     VBox overlayBox = new VBox(10);
     overlayBox.setPadding(new Insets(50));
+    Color bgColor = DatenManager.getInstance().getDesignEinstellungen().getHintergrundfarbe();
     overlayBox.setBackground(new Background(new BackgroundFill(
-        Color.color(1, 0, 1, 0.6), CornerRadii.EMPTY, Insets.EMPTY
+        Color.color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 0.6), CornerRadii.EMPTY, Insets.EMPTY
     )));
     overlayBox.setMaxWidth(Double.MAX_VALUE);
     overlayBox.setMaxHeight(Double.MAX_VALUE);
@@ -64,12 +69,11 @@ for (Team team : teams) {
 
     Label nameLabel = new Label(teamName);
     nameLabel.setPrefWidth(100);
-    // TODO: Read the text color from the config file
-    nameLabel.setTextFill(Color.WHITE);
+    nameLabel.setTextFill(DatenManager.getInstance().getDesignEinstellungen().getTextfarbe());
 
     Label punkteLabel = new Label(String.valueOf(punkte));
     punkteLabel.setPrefWidth(50);
-    punkteLabel.setTextFill(Color.WHITE);
+    punkteLabel.setTextFill(DatenManager.getInstance().getDesignEinstellungen().getTextfarbe());
     punkteLabel.setAlignment(Pos.CENTER_RIGHT);
     punkteLabel.setTextAlignment(javafx.scene.text.TextAlignment.RIGHT);
 
@@ -112,21 +116,6 @@ for (Team team : teams) {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    private void adjustBackgroundSize() {
-        if (backgroundImageView.getImage() == null) return;
-
-        double paneRatio = root.getWidth() / root.getHeight();
-        double imageRatio = backgroundImageView.getImage().getWidth() / backgroundImageView.getImage().getHeight();
-
-        if (paneRatio > imageRatio) {
-            backgroundImageView.setFitWidth(root.getWidth());
-            backgroundImageView.setFitHeight(-1);
-        } else {
-            backgroundImageView.setFitHeight(root.getHeight());
-            backgroundImageView.setFitWidth(-1);
         }
     }
 }

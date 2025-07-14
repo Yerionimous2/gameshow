@@ -24,8 +24,8 @@ public class Frage implements Serializable {
 		if(this.team != null) {
 			return this.team.getFarbe();
 		}
-		// TODO: Standard Fragenfarbe aus Config auslesen
-		return new Color(1, 0, 1, 0.6f);
+		Color bgColor = DatenManager.getInstance().getDesignEinstellungen().getHintergrundfarbe();
+        return new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 0.6);
 	}
 	
 	public String getTitel(String kategorie) {
@@ -45,4 +45,12 @@ public class Frage implements Serializable {
 	public void setTeam(Team team) {
 		this.team = team;
 	}
+
+    public void setText(String trim) {
+		this.text = trim;
+    }
+
+    public void setPunkte(Integer value) {
+		this.punkte = value;
+    }
 }

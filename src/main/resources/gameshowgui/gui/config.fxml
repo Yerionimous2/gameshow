@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.control.ColorPicker?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="gameshowgui.gui.ConfigController">
+    <left>
+        <VBox spacing="5" prefWidth="450" BorderPane.alignment="CENTER">
+            <Label text="Kategorien / Fragen / Teams" />
+            <TreeView fx:id="treeView" prefHeight="900" />
+            <HBox spacing="5">
+            <padding>
+                <Insets top="5" right="5" bottom="5" left="5"/>
+            </padding>
+                <Button fx:id="btnAddKategorie" text="Kategorie hinzufügen" onAction="#onAddKategorie" />
+                <Button fx:id="btnAddFrage" text="Frage hinzufügen" onAction="#onAddFrage" />
+                <Button fx:id="btnAddTeam" text="Team hinzufügen" onAction="#onAddTeam" />
+            </HBox>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="10" >
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="Bearbeiten" />
+
+            <!-- Kategorie-Bearbeitung -->
+            <VBox fx:id="kategorieBox" visible="false" managed="false" spacing="5">
+                <Label text="Kategorie Name" />
+                <TextField fx:id="kategorieNameField" promptText="Kategoriename" />
+                <Button fx:id="btnDeleteKategorie" text="Kategorie löschen" onAction="#onDeleteKategorie"/>
+            </VBox>
+
+            <!-- Frage-Bearbeitung -->
+            <VBox fx:id="frageBox" visible="false" managed="false" spacing="5">
+                <Label text="Frage Text" />
+                <TextField fx:id="frageTextField" promptText="Fragetext" />
+                <Label text="Punkte" />
+                <Spinner fx:id="punkteSpinner" editable="true" min="0" max="100" />
+                <Button fx:id="btnDeleteFrage" text="Frage löschen" onAction="#onDeleteFrage"/>
+            </VBox>
+
+            <!-- Team-Bearbeitung -->
+            <VBox fx:id="teamBox" visible="false" managed="false" spacing="5">
+                <Label text="Team Name" />
+                <TextField fx:id="teamNameField" promptText="Teamname" />
+                <Label text="Team Farbe" />
+                <ColorPicker fx:id="teamColorPicker" />
+                <Button fx:id="btnDeleteTeam" text="Team löschen" onAction="#onDeleteTeam"/>
+            </VBox>
+
+            <Button text="Speichern" onAction="#handleSpeichern" />
+            <Button text="Farben Konfigurieren" onAction="#onFarbenBearbeiten" />
+            <Button text="Zurück" onAction="#wechselZuUebersicht" />
+        </VBox>
+    </center>
+</BorderPane>

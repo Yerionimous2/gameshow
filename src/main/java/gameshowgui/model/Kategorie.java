@@ -37,4 +37,8 @@ public class Kategorie implements Serializable {
 		result += ")";
 		return result;
 	}
+
+    public void setName(String trim) {
+		this.name = trim;
+    }
 }
