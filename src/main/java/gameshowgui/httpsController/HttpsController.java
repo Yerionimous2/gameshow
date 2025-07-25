@@ -1,14 +1,15 @@
 package gameshowgui.httpsController;
 
 import org.eclipse.jetty.server.*;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import gameshowgui.gui.ConfigController;
 import gameshowgui.gui.PointsController;
 import gameshowgui.gui.PrimaryController;
 import gameshowgui.gui.SecondaryController;
+import gameshowgui.model.DatenManager;
 import gameshowgui.model.Frage;
 import gameshowgui.model.Kategorie;
+import gameshowgui.model.Team;
 
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
@@ -20,7 +21,6 @@ import jakarta.servlet.ServletException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.security.KeyStore;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -83,51 +83,38 @@ public final class HttpsController {
 
     
 
-    private HttpsController(Kategorie[] kategorien) {
+        private HttpsController(Kategorie[] kategorien) {
         try {
-            String alias = "obviousAlias";
-            char[] password = "password1".toCharArray();
-            KeyStore keystore = KeystoreUtil.createSelfSignedKeystore(alias, password);
-
-            SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
-            sslContextFactory.setKeyStore(keystore);
-            sslContextFactory.setKeyStorePassword(new String(password));
-            sslContextFactory.setKeyManagerPassword(new String(password));
-            sslContextFactory.setSniRequired(false);
-            sslContextFactory.setTrustAll(true);
-
-            HttpConfiguration https = new HttpConfiguration();
-            https.addCustomizer(new SecureRequestCustomizer());
-
-            StringBuilder builder = new StringBuilder();
-
-                for (Kategorie kat : kategorien) {
-                    builder.append(kat.getName())
-                            .append(",");
-                    for (Frage frage : kat.getFragen()) {
-                        builder.append(frage.getPunkte())
-                                .append(",");
-                    }
-                    builder.append("\n");
-                }
-                aktuelleNachricht = builder.toString();
-
+            // Server initialisieren
             Server server = new Server();
-            ServerConnector sslConnector = new ServerConnector(
-                server,
-                new SslConnectionFactory(sslContextFactory, "http/1.1"),
-                new HttpConnectionFactory(https)
-            );
-            sslConnector.setPort(8443);
-            server.addConnector(sslConnector);
+
+            // Normale HTTP-Verbindung auf Port 8080
+            ServerConnector connector = new ServerConnector(server);
+            connector.setPort(8443);
+            server.addConnector(connector);
+
+            // Aktuelle Nachricht vorbereiten
+            StringBuilder builder = new StringBuilder();
+            for (Kategorie kat : kategorien) {
+                builder.append(kat.getName()).append(",");
+                for (Frage frage : kat.getFragen()) {
+                    builder.append(frage.getPunkte()).append(",");
+                }
+                builder.append("\n");
+            }
+            builder.append("Teams:");
+            for(Team team : DatenManager.getInstance().getTeams()) {
+                builder.append(team.getName()).append(",");
+            }
+            aktuelleNachricht = builder.toString();
 
             server.setHandler(new AbstractHandler() {
                 @Override
                 public void handle(String target,
-                               Request baseRequest,
-                               HttpServletRequest request,
-                               HttpServletResponse response)
-                    throws IOException, ServletException {
+                                   Request baseRequest,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response)
+                        throws IOException, ServletException {
 
                     if ("POST".equalsIgnoreCase(request.getMethod())) {
                         String empfangeneNachricht;
@@ -144,7 +131,7 @@ public final class HttpsController {
                             if (pointsController != null) {
                                 pointsController.handleMessage(empfangeneNachricht);
                             }
-                            if(configController != null) {
+                            if (configController != null) {
                                 configController.handleMessage(empfangeneNachricht);
                             }
                         });
@@ -164,7 +151,9 @@ public final class HttpsController {
                     }
                 }
             });
+
             server.start();
+
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
