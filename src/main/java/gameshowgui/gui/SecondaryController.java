@@ -50,7 +50,13 @@ public class SecondaryController {
     @FXML
     private void initialize() {
         HttpsController.getInstance(this);
-        Image img = new Image(DatenManager.getInstance().getDesignEinstellungen().getHintergrundbild(), true);
+        Image img;
+        if(DatenManager.getInstance().getImage() == null) {
+            img = new Image(DatenManager.getInstance().getDesignEinstellungen().getHintergrundbild(), true);
+            DatenManager.getInstance().setImage(img);
+        } else {
+            img = DatenManager.getInstance().getImage();
+        }
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, false, true);
         BackgroundImage bgImage = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
         root.setBackground(new Background(bgImage));

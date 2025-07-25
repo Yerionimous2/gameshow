@@ -9,12 +9,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javafx.scene.image.Image;
+
 public class DatenManager {
     private static DatenManager instance;
     private DatenEinwickler datenEinwickler;
     private DesignEinstellungen design;
     private static final Path DATEIPFAD = Paths.get(System.getProperty("user.home"), ".gameshow", "daten.ser");
     private static final Path DATEIPFADFARBEN = Paths.get(System.getProperty("user.home"), ".gameshow", "farben.ser");
+
+    private boolean hideIP = false;
+    private Image hintergrundbild;
 
     private DatenManager() {
         try {
@@ -262,5 +267,21 @@ public class DatenManager {
                 }
             }
         }
+    }
+
+    public boolean hideIP() {
+        return hideIP;
+    }
+
+    public void setHideIP() {
+        this.hideIP = true;
+    }
+
+    public Image getImage() {
+        return this.hintergrundbild;
+    }
+
+    public void setImage(Image img) {
+        this.hintergrundbild = img;
     }
 }

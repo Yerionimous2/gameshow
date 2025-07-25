@@ -38,8 +38,6 @@ public class PrimaryController {
     @FXML
     Button btnIP;
 
-    private boolean clickedIPButton = false;
-
     @FXML
     private void wechselZuFrage(Frage frage, Kategorie kategorie) throws IOException {
         App.setRoot("secondary");
@@ -50,8 +48,8 @@ public class PrimaryController {
 
     public static void hideIP() {
         PrimaryController controller = (PrimaryController) App.getCurrentController();
-        controller.clickedIPButton = true;
         controller.btnIP.setVisible(false);
+        DatenManager.getInstance().setHideIP();
     }
 
 
@@ -65,7 +63,7 @@ public class PrimaryController {
             btnIP.setText("IP konnte nicht ermittelt werden");
             e.printStackTrace();
         }
-        if(!clickedIPButton) {
+        if(!DatenManager.getInstance().hideIP()) {
             btnIP.setVisible(true);
         } else {
             btnIP.setVisible(false);
@@ -73,7 +71,13 @@ public class PrimaryController {
         foregroundGrid.prefWidthProperty().bind(root.widthProperty());
         foregroundGrid.prefHeightProperty().bind(root.heightProperty());
         
-        Image img = new Image(DatenManager.getInstance().getDesignEinstellungen().getHintergrundbild(), true);
+        Image img;
+        if(DatenManager.getInstance().getImage() == null) {
+            img = new Image(DatenManager.getInstance().getDesignEinstellungen().getHintergrundbild(), true);
+            DatenManager.getInstance().setImage(img);
+        } else {
+            img = DatenManager.getInstance().getImage();
+        }
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, false, true);
         BackgroundImage bgImage = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
         root.setBackground(new Background(bgImage));
@@ -99,7 +103,7 @@ public class PrimaryController {
 
     @FXML
     private void onHideIP() {
-        clickedIPButton = true;
+        DatenManager.getInstance().setHideIP();
         btnIP.setVisible(false);
     }
 
@@ -193,6 +197,12 @@ public class PrimaryController {
             DatenManager.getInstance().speichern();
         } else if(teile[0].equals("Zurücksetzen")) {
             DatenManager.getInstance().zurücksetzen();
+            try {
+                App.setRoot("secondary");
+                App.setRoot("primary");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else if(teile[0].equals("Anpassungsmodus")) {
             try {
                 App.setRoot("config");
